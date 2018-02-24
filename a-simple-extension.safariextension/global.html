@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>A Simple Extension</title>
+
+    <script type="text/javascript">
+
+        // Note. console.log() does *nothing* here.
+
+        safari.extension.settings.addEventListener("change", function (event) {
+            if (event.key === "color") {
+                // Change the color of every page. 
+                safari.application.browserWindows
+                    .map(browserWindow => browserWindow.tabs)
+                    .reduce((accumulator, currentValue) => accumulator.concat(currentValue))
+                    .forEach(tab => tab.page.dispatchMessage("color", {color: safari.extension.settings.color, sender: "change color"}));
+            }
+        }, false);
+
+        safari.application.addEventListener("message", function (event) {
+            if (event.name === "getColor") {
+                event.target.page.dispatchMessage("color", {color: safari.extension.settings.color, sender: event.name});
+            }
+        }, false);
+
+    </script>
+
+</head>
+<body>
+
+</body>
+</html>
